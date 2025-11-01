@@ -299,10 +299,10 @@ const Tasks = () => {
                   {tasks.map((task) => (
                     <div
                       key={task.id}
-                      className={`border border-[#414141] rounded-[12px] p-4 bg-transparent hover:bg-[#1f1f1f] transition-all ${
+                      className={`rounded-[12px] p-4 bg-transparent hover:bg-[#1f1f1f] transition-all ${
                         draggedTaskId === task.id ? 'opacity-50' : ''
                       } ${
-                        dragOverTaskId === task.id ? 'border-blue-500' : ''
+                        dragOverTaskId === task.id ? 'border border-blue-500' : ''
                       }`}
                       onClick={() => handleToggleTask(task.id)}
                       onContextMenu={(e) => handleContextMenu(e, task.id)}
@@ -330,13 +330,13 @@ const Tasks = () => {
                         <TooltipProvider delayDuration={100}>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <h3 className={`text-base font-semibold flex-1 ${
+                              <h3 className={`text-base font-semibold flex-1 truncate ${
                                 task.completed ? 'text-gray-400 line-through' : 'text-white'
                               }`}>
                                 {task.title}
                               </h3>
                             </TooltipTrigger>
-                            <TooltipContent side="top" className="bg-[#1f1f1f] text-white rounded-xl border-0">
+                            <TooltipContent side="bottom" align="start" className="bg-[#1f1f1f] text-white rounded-xl border-0 z-50">
                               <p className="max-w-sm">{task.title}</p>
                             </TooltipContent>
                           </Tooltip>
@@ -353,7 +353,7 @@ const Tasks = () => {
                                   {task.description}
                                 </p>
                               </TooltipTrigger>
-                              <TooltipContent side="top" className="bg-[#1f1f1f] text-white rounded-xl border-0">
+                              <TooltipContent side="bottom" align="start" className="bg-[#1f1f1f] text-white rounded-xl border-0 z-50">
                                 <p className="max-w-sm">{task.description}</p>
                               </TooltipContent>
                             </Tooltip>
@@ -364,10 +364,12 @@ const Tasks = () => {
                       {/* Bottom row: Date/Time tag, Priority, Reminder */}
                       <div className="ml-6 flex items-center gap-2 flex-wrap">
                         {/* Date and Time Tag */}
-                        <div className="flex items-center gap-2 px-3 py-1.5 bg-[#252527] border border-[#414141] rounded-full text-xs text-gray-300">
-                          <Calendar className="h-3 w-3" />
-                          <span>{task.dueDate} {task.time}</span>
-                        </div>
+                        {task.dueDate && (
+                          <div className="flex items-center gap-2 px-3 py-1.5 bg-[#252527] border border-[#414141] rounded-full text-xs text-gray-300">
+                            <Calendar className="h-3 w-3" />
+                            <span>{task.dueDate} {task.time ? task.time : ''}</span>
+                          </div>
+                        )}
 
                         {/* Priority Badge */}
                         {(() => {
