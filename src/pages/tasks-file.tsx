@@ -94,7 +94,7 @@ const Tasks = () => {
         completed: false,
         creationDate: currentDate.toLocaleDateString(),
         dueDate: selectedDate ? selectedDate.toLocaleDateString() : new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-        time: currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        time: selectedTime || currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         priority: selectedPriority,
         description: newTaskDescription.trim(),
         reminder: selectedReminder,
@@ -336,7 +336,7 @@ const Tasks = () => {
                                 {task.title}
                               </h3>
                             </TooltipTrigger>
-                            <TooltipContent side="right" className="bg-[#1f1f1f] text-white rounded-xl border-0">
+                            <TooltipContent side="top" className="bg-[#1f1f1f] text-white rounded-xl border-0">
                               <p className="max-w-sm">{task.title}</p>
                             </TooltipContent>
                           </Tooltip>
@@ -353,7 +353,7 @@ const Tasks = () => {
                                   {task.description}
                                 </p>
                               </TooltipTrigger>
-                              <TooltipContent side="right" className="bg-[#1f1f1f] text-white rounded-xl border-0">
+                              <TooltipContent side="top" className="bg-[#1f1f1f] text-white rounded-xl border-0">
                                 <p className="max-w-sm">{task.description}</p>
                               </TooltipContent>
                             </Tooltip>
@@ -366,7 +366,7 @@ const Tasks = () => {
                         {/* Date and Time Tag */}
                         <div className="flex items-center gap-2 px-3 py-1.5 bg-[#252527] border border-[#414141] rounded-full text-xs text-gray-300">
                           <Calendar className="h-3 w-3" />
-                          <span>{task.creationDate} {task.time}</span>
+                          <span>{task.dueDate} {task.time}</span>
                         </div>
 
                         {/* Priority Badge */}
