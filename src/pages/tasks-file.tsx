@@ -80,6 +80,30 @@ const Tasks = () => {
     return { bg: 'bg-gray-500/20', text: getPriorityColorFromStorage(priorityName) };
   };
 
+  const getLabelColor = (labelName: string): string => {
+    const saved = localStorage.getItem('kario-labels');
+    if (saved) {
+      const customLabels = JSON.parse(saved);
+      const found = customLabels.find((l: { name: string; color: string }) => l.name === labelName);
+      if (found) return found.color;
+    }
+
+    const presetLabels: { name: string; color: string }[] = [
+      { name: '#ByKairo', color: 'text-blue-500' },
+      { name: '#School', color: 'text-green-500' },
+      { name: '#Work', color: 'text-orange-500' },
+      { name: '#Personal', color: 'text-pink-500' },
+      { name: '#Urgent', color: 'text-red-500' },
+      { name: '#Shopping', color: 'text-cyan-500' },
+      { name: '#Health', color: 'text-emerald-500' },
+      { name: '#Finance', color: 'text-amber-500' },
+      { name: '#Family', color: 'text-rose-500' },
+      { name: '#Projects', color: 'text-teal-500' },
+    ];
+    const preset = presetLabels.find(l => l.name === labelName);
+    return preset?.color || 'text-gray-400';
+  };
+
   const handleCreateTask = () => {
     setIsRotated(!isRotated);
     setIsAddingTask(true);
@@ -392,16 +416,14 @@ const Tasks = () => {
                           </div>
                         )}
 
-                        {/* Labels */}
+                        {/* Labels - Consolidated into single button */}
                         {task.labels && task.labels.length > 0 && (
-                          <div className="flex items-center gap-2 flex-wrap">
+                          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#252527] border border-[#414141] rounded-full">
                             {task.labels.map((label, index) => (
-                              <span
+                              <Tag
                                 key={index}
-                                className="px-3 py-1.5 bg-[#252527] border border-[#414141] rounded-full text-xs text-gray-300 cursor-pointer hover:text-blue-400 hover:border-blue-400 transition-all duration-200"
-                              >
-                                {label}
-                              </span>
+                                className={`h-4 w-4 ${getLabelColor(label)} transition-all duration-200`}
+                              />
                             ))}
                           </div>
                         )}
