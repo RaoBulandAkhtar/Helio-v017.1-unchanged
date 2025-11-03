@@ -306,13 +306,19 @@ const Tasks = () => {
         if (a.completed === b.completed) return 0;
         return a.completed ? 1 : -1;
       });
-    }
-
-    if (sortSettings.creationDate) {
+    } else if (sortSettings.creationDate) {
       filtered.sort((a, b) => {
         const dateA = new Date(a.creationDate).getTime();
         const dateB = new Date(b.creationDate).getTime();
         return dateB - dateA;
+      });
+    } else if (sortSettings.pages) {
+      filtered.sort((a, b) => {
+        return 0;
+      });
+    } else if (sortSettings.chats) {
+      filtered.sort((a, b) => {
+        return 0;
       });
     }
 
