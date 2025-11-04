@@ -60,8 +60,8 @@ const TasksHeader = ({
                   <LayoutGrid className="h-5 w-5 text-white" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent 
-                className="w-[300px] h-[300px] p-4 border border-[#414141] shadow-xl z-50 overflow-y-auto rounded-[20px]"
+              <PopoverContent
+                className="w-[300px] h-auto max-h-[500px] p-4 border border-[#414141] shadow-xl overflow-y-auto rounded-[20px]"
                 style={{ background: '#1F1F1F' }}
                 align="start"
               >
@@ -174,9 +174,9 @@ const TasksHeader = ({
                         </div>
 
                         {/* Priority Filter Popover */}
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between" onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
                           <span className="text-gray-300 text-sm">Priority</span>
-                          <div onClick={(e) => e.stopPropagation()}>
+                          <div>
                             {filterSettings.priority && setFilterValues ? (
                               <PriorityFilterPopover
                                 selectedPriorities={filterValues.priorities}
@@ -201,9 +201,9 @@ const TasksHeader = ({
                         </div>
 
                         {/* Label Filter Popover */}
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between" onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
                           <span className="text-gray-300 text-sm">Label</span>
-                          <div onClick={(e) => e.stopPropagation()}>
+                          <div>
                             {filterSettings.label && setFilterValues ? (
                               <LabelFilterPopover
                                 selectedLabels={filterValues.labels}
