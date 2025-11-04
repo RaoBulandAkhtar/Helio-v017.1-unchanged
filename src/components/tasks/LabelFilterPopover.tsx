@@ -84,12 +84,12 @@ const LabelFilterPopover: React.FC<LabelFilterPopoverProps> = ({ selectedLabels,
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-[300px] p-0 bg-[#1b1b1b] border border-[#414141] rounded-[12px] overflow-hidden flex flex-col"
+        className="w-[300px] h-[300px] p-0 bg-[#1b1b1b] border border-[#414141] rounded-[20px] overflow-hidden flex flex-col"
         align="start"
         side="right"
-        sideOffset={8}
+        sideOffset={12}
       >
-        <div className="flex flex-col max-h-[400px]">
+        <div className="flex flex-col h-full">
           {/* Search Input */}
           <div className="p-3 border-b border-[#414141]">
             <Input
