@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { Plus, Search, LayoutGrid, Filter, List, Calendar, Grid3x3, ChevronDown, Clock, Flag, CheckCircle, Tag, AlertCircle, FileText, MessageSquare } from 'lucide-react';
+import { Plus, Search, LayoutGrid, Filter, List, Calendar, Grid3x3, ChevronDown, Clock, CheckCircle, Tag, AlertCircle, FileText, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { IconToggle } from '@/components/ui/icon-toggle';
-import PriorityFilterPopover from './PriorityFilterPopover';
-import DateFilterPopover from './DateFilterPopover';
-import LabelFilterPopover from './LabelFilterPopover';
+import InlineDateFilter from './filters/InlineDateFilter';
+import InlinePriorityFilter from './filters/InlinePriorityFilter';
+import InlineLabelFilter from './filters/InlineLabelFilter';
 
 interface TasksHeaderProps {
   totalTasks: number;
@@ -157,89 +157,56 @@ const TasksHeader = ({
                         />
                       </CollapsibleTrigger>
                       <p className="text-xs text-gray-400 mb-3">
-                        Find Tasks by keyword, date, priority, or label.
+                        Find Tasks by date, priority, or label.
                       </p>
-                      <CollapsibleContent className="space-y-3">
+                      <CollapsibleContent className="space-y-4">
                         {/* Date Filter */}
-                        <div className="flex items-center justify-between" onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
-                          <span className="text-gray-300 text-sm">Date</span>
-                          <div>
-                            {filterSettings.date && setFilterValues ? (
-                              <DateFilterPopover
-                                selectedDate={filterValues.date}
-                                onSelect={(date) => {
-                                  const newValues = { ...filterValues, date };
-                                  setFilterValues(newValues);
-                                  localStorage.setItem('kario-filter-values', JSON.stringify(newValues));
-                                }}
-                              />
-                            ) : (
-                              <IconToggle
-                                icon={Calendar}
-                                checked={filterSettings.date}
-                                onCheckedChange={(checked) => {
-                                  const newSettings = { ...filterSettings, date: checked };
-                                  setFilterSettings?.(newSettings);
-                                  localStorage.setItem('kario-filter-settings', JSON.stringify(newSettings));
-                                }}
-                              />
-                            )}
-                          </div>
-                        </div>
+                        <InlineDateFilter
+                          isActive={filterSettings.date}
+                          selectedDate={filterValues.date}
+                          onToggle={(checked) => {
+                            const newSettings = { ...filterSettings, date: checked };
+                            setFilterSettings?.(newSettings);
+                            localStorage.setItem('kario-filter-settings', JSON.stringify(newSettings));
+                          }}
+                          onSelect={(date) => {
+                            const newValues = { ...filterValues, date };
+                            setFilterValues?.(newValues);
+                            localStorage.setItem('kario-filter-values', JSON.stringify(newValues));
+                          }}
+                        />
 
-                        {/* Priority Filter Popover */}
-                        <div className="flex items-center justify-between" onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
-                          <span className="text-gray-300 text-sm">Priority</span>
-                          <div>
-                            {filterSettings.priority && setFilterValues ? (
-                              <PriorityFilterPopover
-                                selectedPriorities={filterValues.priorities}
-                                onSelect={(priorities) => {
-                                  const newValues = { ...filterValues, priorities };
-                                  setFilterValues(newValues);
-                                  localStorage.setItem('kario-filter-values', JSON.stringify(newValues));
-                                }}
-                              />
-                            ) : (
-                              <IconToggle
-                                icon={AlertCircle}
-                                checked={filterSettings.priority}
-                                onCheckedChange={(checked) => {
-                                  const newSettings = { ...filterSettings, priority: checked };
-                                  setFilterSettings?.(newSettings);
-                                  localStorage.setItem('kario-filter-settings', JSON.stringify(newSettings));
-                                }}
-                              />
-                            )}
-                          </div>
-                        </div>
+                        {/* Priority Filter */}
+                        <InlinePriorityFilter
+                          isActive={filterSettings.priority}
+                          selectedPriorities={filterValues.priorities}
+                          onToggle={(checked) => {
+                            const newSettings = { ...filterSettings, priority: checked };
+                            setFilterSettings?.(newSettings);
+                            localStorage.setItem('kario-filter-settings', JSON.stringify(newSettings));
+                          }}
+                          onSelect={(priorities) => {
+                            const newValues = { ...filterValues, priorities };
+                            setFilterValues?.(newValues);
+                            localStorage.setItem('kario-filter-values', JSON.stringify(newValues));
+                          }}
+                        />
 
-                        {/* Label Filter Popover */}
-                        <div className="flex items-center justify-between" onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
-                          <span className="text-gray-300 text-sm">Label</span>
-                          <div>
-                            {filterSettings.label && setFilterValues ? (
-                              <LabelFilterPopover
-                                selectedLabels={filterValues.labels}
-                                onSelect={(labels) => {
-                                  const newValues = { ...filterValues, labels };
-                                  setFilterValues(newValues);
-                                  localStorage.setItem('kario-filter-values', JSON.stringify(newValues));
-                                }}
-                              />
-                            ) : (
-                              <IconToggle
-                                icon={Tag}
-                                checked={filterSettings.label}
-                                onCheckedChange={(checked) => {
-                                  const newSettings = { ...filterSettings, label: checked };
-                                  setFilterSettings?.(newSettings);
-                                  localStorage.setItem('kario-filter-settings', JSON.stringify(newSettings));
-                                }}
-                              />
-                            )}
-                          </div>
-                        </div>
+                        {/* Label Filter */}
+                        <InlineLabelFilter
+                          isActive={filterSettings.label}
+                          selectedLabels={filterValues.labels}
+                          onToggle={(checked) => {
+                            const newSettings = { ...filterSettings, label: checked };
+                            setFilterSettings?.(newSettings);
+                            localStorage.setItem('kario-filter-settings', JSON.stringify(newSettings));
+                          }}
+                          onSelect={(labels) => {
+                            const newValues = { ...filterValues, labels };
+                            setFilterValues?.(newValues);
+                            localStorage.setItem('kario-filter-values', JSON.stringify(newValues));
+                          }}
+                        />
                       </CollapsibleContent>
                     </Collapsible>
                   </div>
