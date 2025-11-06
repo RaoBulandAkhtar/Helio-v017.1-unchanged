@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Calendar, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { IconToggle } from '@/components/ui/icon-toggle';
 import { format } from 'date-fns';
 
 interface InlineDateFilterProps {
@@ -19,10 +20,9 @@ const InlineDateFilter: React.FC<InlineDateFilterProps> = ({
 }) => {
   const [expanded, setExpanded] = useState(false);
 
-  const handleToggle = () => {
-    const newState = !isActive;
-    onToggle(newState);
-    if (!newState) {
+  const handleToggle = (checked: boolean) => {
+    onToggle(checked);
+    if (!checked) {
       setExpanded(false);
     }
   };
@@ -40,19 +40,13 @@ const InlineDateFilter: React.FC<InlineDateFilterProps> = ({
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center justify-between relative pb-2">
-        <button
-          onClick={handleToggle}
-          className={`flex items-center gap-2 transition-all duration-200 relative ${
-            isActive ? 'text-white' : 'text-gray-300 hover:text-white'
-          }`}
-        >
-          <Calendar className="h-4 w-4" />
-          <span className="text-sm">Date</span>
-          {isActive && (
-            <div className="absolute bottom-0 left-0 h-0.5 bg-yellow-400 w-full"></div>
-          )}
-        </button>
+      <div className="flex items-center justify-between">
+        <span className="text-gray-300 text-sm">Date</span>
+        <IconToggle
+          icon={Calendar}
+          checked={isActive}
+          onCheckedChange={handleToggle}
+        />
       </div>
 
       {isActive && (

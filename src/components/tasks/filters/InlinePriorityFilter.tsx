@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { AlertCircle, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { IconToggle } from '@/components/ui/icon-toggle';
 import { cn } from '@/lib/utils';
 
 interface InlinePriorityFilterProps {
@@ -49,10 +50,9 @@ const InlinePriorityFilter: React.FC<InlinePriorityFilterProps> = ({
     );
   }, [searchInput]);
 
-  const handleToggle = () => {
-    const newState = !isActive;
-    onToggle(newState);
-    if (!newState) {
+  const handleToggle = (checked: boolean) => {
+    onToggle(checked);
+    if (!checked) {
       setExpanded(false);
       setSearchInput('');
     }
@@ -72,19 +72,13 @@ const InlinePriorityFilter: React.FC<InlinePriorityFilterProps> = ({
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center justify-between relative pb-2">
-        <button
-          onClick={handleToggle}
-          className={`flex items-center gap-2 transition-all duration-200 relative ${
-            isActive ? 'text-white' : 'text-gray-300 hover:text-white'
-          }`}
-        >
-          <AlertCircle className="h-4 w-4" />
-          <span className="text-sm">Priority</span>
-          {isActive && (
-            <div className="absolute bottom-0 left-0 h-0.5 bg-yellow-400 w-full"></div>
-          )}
-        </button>
+      <div className="flex items-center justify-between">
+        <span className="text-gray-300 text-sm">Priority</span>
+        <IconToggle
+          icon={AlertCircle}
+          checked={isActive}
+          onCheckedChange={handleToggle}
+        />
       </div>
 
       {isActive && (
