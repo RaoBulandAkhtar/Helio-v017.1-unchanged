@@ -1,14 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { Button } from "@/components/ui/button";
-import { Tag, X, ChevronDown } from 'lucide-react';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Tag, X } from 'lucide-react';
 import { cn } from "@/lib/utils";
 
 interface LabelFilterCollapsibleProps {
   selectedLabels: string[];
   onSelect: (labels: string[]) => void;
-  isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
 }
 
 interface LabelData {
@@ -18,9 +15,7 @@ interface LabelData {
 
 const LabelFilterCollapsible: React.FC<LabelFilterCollapsibleProps> = ({
   selectedLabels,
-  onSelect,
-  isOpen,
-  onOpenChange
+  onSelect
 }) => {
   const [searchInput, setSearchInput] = useState('');
   const [availableLabels] = useState<LabelData[]>(() => {
@@ -65,122 +60,96 @@ const LabelFilterCollapsible: React.FC<LabelFilterCollapsibleProps> = ({
     onSelect([]);
   };
 
-  const getLabelColor = (labelName: string): string => {
-    const custom = availableLabels.find(l => l.name === labelName);
-    if (custom) return custom.color;
-
-    const preset = presetLabels.find(l => l.name === labelName);
-    return preset?.color || 'text-gray-400';
-  };
-
   return (
-    <Collapsible open={isOpen} onOpenChange={onOpenChange}>
-      <CollapsibleTrigger className="flex items-center justify-between w-full mb-3">
-        <div className="flex items-center gap-2">
-          <Tag className="h-4 w-4 text-gray-400" />
-          <span className="text-gray-300 text-sm">Label</span>
-          {selectedLabels.length > 0 && (
-            <span className="text-xs bg-[#252525] text-gray-300 px-2 py-1 rounded border border-[#414141]">
-              {selectedLabels.length}
-            </span>
-          )}
-        </div>
-        <ChevronDown
-          className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${
-            isOpen ? 'rotate-180' : ''
-          }`}
+    <div className="space-y-2">
+      {/* Search Input */}
+      <div className="mb-3">
+        <input
+          type="text"
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          placeholder="Search label..."
+          className="w-full bg-[#252525] text-white text-sm px-3 py-2 outline-none placeholder-gray-500 border border-[#414141] rounded-[8px]"
         />
-      </CollapsibleTrigger>
-      <CollapsibleContent className="space-y-2 pb-3">
-        {/* Search Input */}
-        <div className="mb-3">
-          <input
-            type="text"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="Search label..."
-            className="w-full bg-[#252525] text-white text-sm px-3 py-2 outline-none placeholder-gray-500 border border-[#414141] rounded-[8px]"
-          />
-        </div>
+      </div>
 
-        {/* Labels List */}
-        <div className="space-y-2 max-h-[250px] overflow-y-auto">
-          {/* Custom Labels */}
-          {availableLabels.length > 0 && filteredCustom.length > 0 && (
-            <>
-              <div className="text-xs text-gray-500 mb-2">Custom Labels</div>
-              {filteredCustom.map((label) => (
-                <Button
-                  key={label.name}
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => toggleLabel(label.name)}
-                  className={cn(
-                    "w-full justify-start text-left bg-[#252525] text-gray-300 hover:bg-[#2e2e2e] hover:text-white border border-[#414141] rounded-[8px] h-8 text-xs transition-all duration-200",
-                    selectedLabels.includes(label.name) && "bg-[#2e2e2e] text-white"
-                  )}
-                >
-                  <Tag className={cn("h-4 w-4 mr-2", label.color)} />
-                  {label.name}
-                  {selectedLabels.includes(label.name) && (
-                    <span className="ml-auto text-green-400">✓</span>
-                  )}
-                </Button>
-              ))}
-            </>
-          )}
+      {/* Labels List */}
+      <div className="space-y-2 max-h-[250px] overflow-y-auto">
+        {/* Custom Labels */}
+        {availableLabels.length > 0 && filteredCustom.length > 0 && (
+          <>
+            <div className="text-xs text-gray-500 mb-2">Custom Labels</div>
+            {filteredCustom.map((label) => (
+              <Button
+                key={label.name}
+                variant="ghost"
+                size="sm"
+                onClick={() => toggleLabel(label.name)}
+                className={cn(
+                  "w-full justify-start text-left bg-[#252525] text-gray-300 hover:bg-[#2e2e2e] hover:text-white border border-[#414141] rounded-[8px] h-8 text-xs transition-all duration-200",
+                  selectedLabels.includes(label.name) && "bg-[#2e2e2e] text-white"
+                )}
+              >
+                <Tag className={cn("h-4 w-4 mr-2", label.color)} />
+                {label.name}
+                {selectedLabels.includes(label.name) && (
+                  <span className="ml-auto text-green-400">✓</span>
+                )}
+              </Button>
+            ))}
+          </>
+        )}
 
-          {/* Preset Labels */}
-          {filteredPreset.length > 0 && (
-            <>
-              {availableLabels.length > 0 && filteredCustom.length > 0 && (
-                <div className="border-t border-[#414141] my-2"></div>
-              )}
-              <div className="text-xs text-gray-500 mb-2">Preset Labels</div>
-              {filteredPreset.map((label) => (
-                <Button
-                  key={label.name}
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => toggleLabel(label.name)}
-                  className={cn(
-                    "w-full justify-start text-left bg-[#252525] text-gray-300 hover:bg-[#2e2e2e] hover:text-white border border-[#414141] rounded-[8px] h-8 text-xs transition-all duration-200",
-                    selectedLabels.includes(label.name) && "bg-[#2e2e2e] text-white"
-                  )}
-                >
-                  <Tag className={cn("h-4 w-4 mr-2", label.color)} />
-                  {label.name}
-                  {selectedLabels.includes(label.name) && (
-                    <span className="ml-auto text-green-400">✓</span>
-                  )}
-                </Button>
-              ))}
-            </>
-          )}
+        {/* Preset Labels */}
+        {filteredPreset.length > 0 && (
+          <>
+            {availableLabels.length > 0 && filteredCustom.length > 0 && (
+              <div className="border-t border-[#414141] my-2"></div>
+            )}
+            <div className="text-xs text-gray-500 mb-2">Preset Labels</div>
+            {filteredPreset.map((label) => (
+              <Button
+                key={label.name}
+                variant="ghost"
+                size="sm"
+                onClick={() => toggleLabel(label.name)}
+                className={cn(
+                  "w-full justify-start text-left bg-[#252525] text-gray-300 hover:bg-[#2e2e2e] hover:text-white border border-[#414141] rounded-[8px] h-8 text-xs transition-all duration-200",
+                  selectedLabels.includes(label.name) && "bg-[#2e2e2e] text-white"
+                )}
+              >
+                <Tag className={cn("h-4 w-4 mr-2", label.color)} />
+                {label.name}
+                {selectedLabels.includes(label.name) && (
+                  <span className="ml-auto text-green-400">✓</span>
+                )}
+              </Button>
+            ))}
+          </>
+        )}
 
-          {filteredCustom.length === 0 && filteredPreset.length === 0 && (
-            <div className="text-center text-gray-500 text-sm py-4">
-              No labels found
-            </div>
-          )}
-        </div>
-
-        {/* Clear Button */}
-        {selectedLabels.length > 0 && (
-          <div className="pt-2 border-t border-[#414141]">
-            <Button
-              onClick={clearAll}
-              variant="ghost"
-              size="sm"
-              className="w-full text-gray-400 hover:text-red-400 hover:bg-red-500/10 border border-[#414141] rounded-[8px] text-xs h-8"
-            >
-              <X className="h-3 w-3 mr-1" />
-              Clear
-            </Button>
+        {filteredCustom.length === 0 && filteredPreset.length === 0 && (
+          <div className="text-center text-gray-500 text-sm py-4">
+            No labels found
           </div>
         )}
-      </CollapsibleContent>
-    </Collapsible>
+      </div>
+
+      {/* Clear Button */}
+      {selectedLabels.length > 0 && (
+        <div className="pt-2 border-t border-[#414141]">
+          <Button
+            onClick={clearAll}
+            variant="ghost"
+            size="sm"
+            className="w-full text-gray-400 hover:text-red-400 hover:bg-red-500/10 border border-[#414141] rounded-[8px] text-xs h-8"
+          >
+            <X className="h-3 w-3 mr-1" />
+            Clear
+          </Button>
+        </div>
+      )}
+    </div>
   );
 };
 

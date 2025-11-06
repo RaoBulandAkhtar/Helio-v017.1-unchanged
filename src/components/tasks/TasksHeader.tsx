@@ -43,8 +43,6 @@ const TasksHeader = ({
   const [displayPopoverOpen, setDisplayPopoverOpen] = useState(false);
   const [sortCollapsed, setSortCollapsed] = useState(true);
   const [filterCollapsed, setFilterCollapsed] = useState(true);
-  const [priorityFilterOpen, setPriorityFilterOpen] = useState(false);
-  const [labelFilterOpen, setLabelFilterOpen] = useState(false);
 
   return (
     <>
@@ -191,6 +189,7 @@ const TasksHeader = ({
 
                         {/* Priority Filter */}
                         <div onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
+                          <span className="text-gray-300 text-sm mb-2 block">Priority</span>
                           <PriorityFilterCollapsible
                             selectedPriorities={filterValues.priorities}
                             onSelect={(priorities) => {
@@ -198,13 +197,12 @@ const TasksHeader = ({
                               setFilterValues(newValues);
                               localStorage.setItem('kario-filter-values', JSON.stringify(newValues));
                             }}
-                            isOpen={priorityFilterOpen}
-                            onOpenChange={setPriorityFilterOpen}
                           />
                         </div>
 
                         {/* Label Filter */}
                         <div onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
+                          <span className="text-gray-300 text-sm mb-2 block">Label</span>
                           <LabelFilterCollapsible
                             selectedLabels={filterValues.labels}
                             onSelect={(labels) => {
@@ -212,8 +210,6 @@ const TasksHeader = ({
                               setFilterValues(newValues);
                               localStorage.setItem('kario-filter-values', JSON.stringify(newValues));
                             }}
-                            isOpen={labelFilterOpen}
-                            onOpenChange={setLabelFilterOpen}
                           />
                         </div>
                       </CollapsibleContent>
