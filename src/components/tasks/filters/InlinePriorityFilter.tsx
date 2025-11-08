@@ -106,7 +106,7 @@ const InlinePriorityFilter: React.FC<InlinePriorityFilterProps> = ({
                       selectedPriorities.includes(priority.name) && 'bg-[#2e2e2e] text-white'
                     )}
                   >
-                    <div className={cn('w-2 h-2 rounded-full mr-2', priority.color)}></div>
+                    <div className={cn('w-3 h-3 rounded-full mr-2 flex-shrink-0', priority.color)}></div>
                     <span className="flex-1">{priority.name}</span>
                     {selectedPriorities.includes(priority.name) && (
                       <span className="text-green-400">✓</span>
@@ -133,7 +133,7 @@ const InlinePriorityFilter: React.FC<InlinePriorityFilterProps> = ({
                       selectedPriorities.includes(priority.name) && 'bg-[#2e2e2e] text-white'
                     )}
                   >
-                    <div className={cn('w-2 h-2 rounded-full mr-2', priority.color)}></div>
+                    <div className={cn('w-3 h-3 rounded-full mr-2 flex-shrink-0', priority.color)}></div>
                     <span className="flex-1">{priority.name}</span>
                     {selectedPriorities.includes(priority.name) && (
                       <span className="text-green-400">✓</span>

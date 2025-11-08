@@ -93,7 +93,7 @@ const InlineDateFilter: React.FC<InlineDateFilterProps> = ({
       </div>
 
       {isActive && (
-        <div className="bg-[#252525] border border-[#414141] rounded-[12px] p-3 space-y-3">
+        <div className="bg-[#252525] border border-[#414141] rounded-[12px] p-3 space-y-2">
           <input
             type="text"
             value={searchInput}
@@ -105,31 +105,14 @@ const InlineDateFilter: React.FC<InlineDateFilterProps> = ({
             <p className="text-xs text-red-400">{searchError}</p>
           )}
 
-          <div className="border-t border-[#414141]"></div>
-
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-400">Or pick from calendar</span>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="h-3.5 w-3.5 text-gray-500 hover:text-gray-300 cursor-help transition-colors" />
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="bg-[#1b1b1b] border border-[#414141] text-gray-300 text-xs">
-                    Filtering limited to 3 months • Upgrade to premium for unlimited range
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-            <div className="flex justify-center scale-90 origin-top">
-              <CalendarComponent
-                mode="single"
-                selected={selectedDate ? new Date(selectedDate) : undefined}
-                onSelect={handleDateSelect}
-                disabled={(date) => !isDateInRange(date)}
-                className="rounded-[8px]"
-              />
-            </div>
+          <div className="flex justify-center scale-90 origin-top -my-2">
+            <CalendarComponent
+              mode="single"
+              selected={selectedDate ? new Date(selectedDate) : undefined}
+              onSelect={handleDateSelect}
+              disabled={(date) => !isDateInRange(date)}
+              className="rounded-[8px]"
+            />
           </div>
 
           {selectedDate && (
