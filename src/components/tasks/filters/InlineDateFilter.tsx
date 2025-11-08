@@ -94,18 +94,16 @@ const InlineDateFilter: React.FC<InlineDateFilterProps> = ({
 
       {isActive && (
         <div className="bg-[#252525] border border-[#414141] rounded-[12px] p-3 space-y-3">
-          <div className="space-y-1">
-            <Input
-              type="text"
-              value={searchInput}
-              onChange={(e) => handleSearchInput(e.target.value)}
-              placeholder="Enter date (MM/DD/YYYY or YYYY-MM-DD)"
-              className="w-full bg-[#1b1b1b] border-0 text-white placeholder-gray-600 text-sm rounded-[6px] focus:border-0 focus:ring-1 focus:ring-[#555555] hover:bg-[#242424] transition-colors"
-            />
-            {searchError && (
-              <p className="text-xs text-red-400">{searchError}</p>
-            )}
-          </div>
+          <input
+            type="text"
+            value={searchInput}
+            onChange={(e) => handleSearchInput(e.target.value)}
+            placeholder="Search date..."
+            className="w-full bg-transparent text-white text-sm px-0 py-2 outline-none placeholder-gray-500 border-none"
+          />
+          {searchError && (
+            <p className="text-xs text-red-400">{searchError}</p>
+          )}
 
           <div className="border-t border-[#414141]"></div>
 
