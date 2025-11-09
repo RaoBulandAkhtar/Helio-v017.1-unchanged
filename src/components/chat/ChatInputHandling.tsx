@@ -243,18 +243,28 @@ export const useChatInputHandling = ({
       addMessage(userMessage, updatedAiMessage);
     } catch (error) {
       console.error('❌ Chat API error:', error);
-      
+
       // Clear the loading timeout
       if (loadingTimeoutRef.current) {
         clearTimeout(loadingTimeoutRef.current);
         loadingTimeoutRef.current = null;
       }
       setIsLoading(false);
-      
+
+      let errorContent = 'Failed to get response from AI service.';
+      if (error instanceof Error) {
+        errorContent = error.message;
+      }
+
+      // If error message doesn't provide provider context, add guidance
+      if (!errorContent.includes('API key') && !errorContent.includes('provider')) {
+        errorContent += ' Please verify your API keys are valid and have quota remaining in Settings > Add API.';
+      }
+
       // Update the AI placeholder message with error
       const errorAiMessage: Message = {
         ...aiPlaceholder,
-        content: `Error: ${error instanceof Error ? error.message : 'Failed to get response from AI service. Please check your API keys.'}`,
+        content: `Error: ${errorContent}`,
         shouldAnimate: true
       };
 

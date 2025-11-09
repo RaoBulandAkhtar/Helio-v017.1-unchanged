@@ -94,59 +94,60 @@ const ApiKeyDialog = ({ isOpen, onClose }: ApiKeyDialogProps) => {
   };
 
   const handleSave = () => {
-    // Clear all API keys first
-    localStorage.removeItem('openai_api_key');
-    localStorage.removeItem('gemini_api_key');
-    localStorage.removeItem('groq_api_key');
-    localStorage.removeItem('openrouter_api_key');
-    localStorage.removeItem('nvidia_api_key');
-    localStorage.removeItem('openai_api_keys');
-    localStorage.removeItem('gemini_api_keys');
-    localStorage.removeItem('groq_api_keys');
-    localStorage.removeItem('openrouter_api_keys');
-
-    // Save only the selected provider's keys
     const validKeys = apiKeys[selectedProvider].filter(key => key.trim());
-    if (validKeys.length > 0) {
-      localStorage.setItem(`${selectedProvider}_api_keys`, JSON.stringify(validKeys));
-      // Also save the first key in the old format for backward compatibility
-      localStorage.setItem(`${selectedProvider}_api_key`, validKeys[0]);
+
+    if (validKeys.length === 0) {
+      toast({
+        title: "No Keys to Save",
+        description: `Please enter at least one API key for ${selectedProvider.toUpperCase()}.`,
+      });
+      return;
     }
+
+    // Save only the selected provider's keys without affecting other providers
+    localStorage.setItem(`${selectedProvider}_api_keys`, JSON.stringify(validKeys));
+    // Also save the first key in the old format for backward compatibility
+    localStorage.setItem(`${selectedProvider}_api_key`, validKeys[0]);
 
     toast({
       title: "API Keys Saved",
-      description: `Your ${selectedProvider.toUpperCase()} API keys (${validKeys.length}) have been saved successfully. You can now use the chat functionality with failover support.`,
+      description: `Your ${selectedProvider.toUpperCase()} API keys (${validKeys.length}) have been saved successfully. Other provider keys remain preserved.`,
     });
 
     onClose();
   };
 
   const handleClear = () => {
-    localStorage.removeItem('openai_api_key');
-    localStorage.removeItem('gemini_api_key');
-    localStorage.removeItem('groq_api_key');
-    localStorage.removeItem('openrouter_api_key');
-    localStorage.removeItem('nvidia_api_key');
-    localStorage.removeItem('openai_api_keys');
-    localStorage.removeItem('gemini_api_keys');
-    localStorage.removeItem('groq_api_keys');
-    localStorage.removeItem('openrouter_api_keys');
-    setApiKeys({
-      openai: [''],
-      gemini: [''],
-      groq: [''],
-      openrouter: ['']
-    });
-    setSelectedProvider('openrouter');
-    
+    // Only clear the selected provider's keys
+    localStorage.removeItem(`${selectedProvider}_api_key`);
+    localStorage.removeItem(`${selectedProvider}_api_keys`);
+
+    setApiKeys(prev => ({
+      ...prev,
+      [selectedProvider]: ['']
+    }));
+
     toast({
       title: "API Keys Cleared",
-      description: "All API keys have been removed.",
+      description: `All ${selectedProvider.toUpperCase()} API keys have been removed. Other provider keys remain.`,
     });
   };
 
   const getActiveKeys = () => {
     return apiKeys[selectedProvider].filter(key => key.trim());
+  };
+
+  const getStoredKeysCount = (provider: 'openai' | 'gemini' | 'groq' | 'openrouter') => {
+    try {
+      const stored = localStorage.getItem(`${provider}_api_keys`);
+      if (stored) {
+        const keys = JSON.parse(stored);
+        return Array.isArray(keys) ? keys.filter(k => k.trim()).length : 0;
+      }
+    } catch (e) {
+      console.error(`Error reading ${provider} keys:`, e);
+    }
+    return 0;
   };
 
   const renderKeyInputs = (provider: 'openai' | 'gemini' | 'groq' | 'openrouter', placeholder: string, color: string) => {
@@ -225,8 +226,8 @@ const ApiKeyDialog = ({ isOpen, onClose }: ApiKeyDialogProps) => {
               <div className="space-y-4">
                 {/* OpenRouter Option - Listed First */}
                 <div className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                  selectedProvider === 'openrouter' 
-                    ? 'border-orange-500 bg-orange-500/10' 
+                  selectedProvider === 'openrouter'
+                    ? 'border-orange-500 bg-orange-500/10'
                     : 'border-gray-600 hover:border-gray-500'
                 }`} onClick={() => handleProviderChange('openrouter')}>
                   <div className="flex items-center gap-3 mb-3">
@@ -238,6 +239,7 @@ const ApiKeyDialog = ({ isOpen, onClose }: ApiKeyDialogProps) => {
                     />
                     <label className="text-white font-medium">OpenRouter API Keys</label>
                     {selectedProvider === 'openrouter' && <span className="text-orange-400 text-xs">ACTIVE</span>}
+                    {getStoredKeysCount('openrouter') > 0 && selectedProvider !== 'openrouter' && <span className="text-orange-400 text-xs">({getStoredKeysCount('openrouter')} saved)</span>}
                   </div>
                   {selectedProvider === 'openrouter' && (
                     <div className="space-y-3">
@@ -249,8 +251,8 @@ const ApiKeyDialog = ({ isOpen, onClose }: ApiKeyDialogProps) => {
 
                 {/* OpenAI Option */}
                 <div className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                  selectedProvider === 'openai' 
-                    ? 'border-blue-500 bg-blue-500/10' 
+                  selectedProvider === 'openai'
+                    ? 'border-blue-500 bg-blue-500/10'
                     : 'border-gray-600 hover:border-gray-500'
                 }`} onClick={() => handleProviderChange('openai')}>
                   <div className="flex items-center gap-3 mb-3">
@@ -262,6 +264,7 @@ const ApiKeyDialog = ({ isOpen, onClose }: ApiKeyDialogProps) => {
                     />
                     <label className="text-white font-medium">OpenAI API Keys</label>
                     {selectedProvider === 'openai' && <span className="text-blue-400 text-xs">ACTIVE</span>}
+                    {getStoredKeysCount('openai') > 0 && selectedProvider !== 'openai' && <span className="text-blue-400 text-xs">({getStoredKeysCount('openai')} saved)</span>}
                   </div>
                   {selectedProvider === 'openai' && (
                     <div className="space-y-3">
@@ -273,8 +276,8 @@ const ApiKeyDialog = ({ isOpen, onClose }: ApiKeyDialogProps) => {
 
                 {/* Gemini Option */}
                 <div className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                  selectedProvider === 'gemini' 
-                    ? 'border-purple-500 bg-purple-500/10' 
+                  selectedProvider === 'gemini'
+                    ? 'border-blue-600 bg-blue-600/10'
                     : 'border-gray-600 hover:border-gray-500'
                 }`} onClick={() => handleProviderChange('gemini')}>
                   <div className="flex items-center gap-3 mb-3">
@@ -282,10 +285,11 @@ const ApiKeyDialog = ({ isOpen, onClose }: ApiKeyDialogProps) => {
                       type="radio"
                       checked={selectedProvider === 'gemini'}
                       onChange={() => handleProviderChange('gemini')}
-                      className="text-purple-500"
+                      className="text-blue-600"
                     />
                     <label className="text-white font-medium">Google Gemini API Keys</label>
-                    {selectedProvider === 'gemini' && <span className="text-purple-400 text-xs">ACTIVE</span>}
+                    {selectedProvider === 'gemini' && <span className="text-blue-500 text-xs">ACTIVE</span>}
+                    {getStoredKeysCount('gemini') > 0 && selectedProvider !== 'gemini' && <span className="text-blue-500 text-xs">({getStoredKeysCount('gemini')} saved)</span>}
                   </div>
                   {selectedProvider === 'gemini' && (
                     <div className="space-y-3">
@@ -297,8 +301,8 @@ const ApiKeyDialog = ({ isOpen, onClose }: ApiKeyDialogProps) => {
 
                 {/* Groq Option */}
                 <div className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                  selectedProvider === 'groq' 
-                    ? 'border-green-500 bg-green-500/10' 
+                  selectedProvider === 'groq'
+                    ? 'border-green-500 bg-green-500/10'
                     : 'border-gray-600 hover:border-gray-500'
                 }`} onClick={() => handleProviderChange('groq')}>
                   <div className="flex items-center gap-3 mb-3">
@@ -310,6 +314,7 @@ const ApiKeyDialog = ({ isOpen, onClose }: ApiKeyDialogProps) => {
                     />
                     <label className="text-white font-medium">Groq API Keys</label>
                     {selectedProvider === 'groq' && <span className="text-green-400 text-xs">ACTIVE</span>}
+                    {getStoredKeysCount('groq') > 0 && selectedProvider !== 'groq' && <span className="text-green-400 text-xs">({getStoredKeysCount('groq')} saved)</span>}
                   </div>
                   {selectedProvider === 'groq' && (
                     <div className="space-y-3">
@@ -340,8 +345,10 @@ const ApiKeyDialog = ({ isOpen, onClose }: ApiKeyDialogProps) => {
 
             <div className="bg-[#1a1a1a] rounded-lg p-4 border border-gray-700">
               <p className="text-gray-300 text-sm">
-                <strong>Failover System:</strong> If your primary API key hits its limit or fails, the system will automatically try the next available key. 
-                Your keys are stored locally and only used for direct API calls.
+                <strong>Priority Order:</strong> OpenRouter (fastest) → Groq → OpenAI → Gemini. If your primary API key hits its limit or fails, the system automatically tries the next available provider.
+              </p>
+              <p className="text-gray-300 text-sm mt-2">
+                <strong>Data Security:</strong> Your API keys are stored locally in your browser and never sent to any server except the respective AI providers' APIs.
               </p>
             </div>
           </div>

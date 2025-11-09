@@ -193,9 +193,20 @@ export const useMessageHandling = ({
               }
             } catch (error) {
               console.error('❌ Error getting AI response:', error);
+
+              let errorContent = 'Failed to get response from AI service.';
+              if (error instanceof Error) {
+                errorContent = error.message;
+              }
+
+              // If error message doesn't provide provider context, add guidance
+              if (!errorContent.includes('API key') && !errorContent.includes('provider')) {
+                errorContent += ' Please verify your API keys are valid and have quota remaining in Settings > Add API.';
+              }
+
               aiResponse = {
                 id: '2',
-                content: `Error: ${error instanceof Error ? error.message : 'Failed to get response from AI service. Please check your API keys.'}`,
+                content: `Error: ${errorContent}`,
                 sender: 'ai',
                 timestamp: new Date(),
                 shouldAnimate: true // Enable animation even for error messages

@@ -26,7 +26,8 @@ export class ChatService {
   private static async callOpenAI(messages: ChatMessage[], files?: FileAttachment[]): Promise<string> {
     const apiKeys = this.getApiKeys('openai');
     if (apiKeys.length === 0) {
-      throw new Error('OpenAI API key not found. Please add your API key in settings.');
+      console.error('OpenAI API key not found');
+      throw new Error('OpenAI API key not found. Please add your OpenAI API key in Settings > Add API.');
     }
 
     // Convert messages to OpenAI format with vision support
@@ -123,7 +124,8 @@ export class ChatService {
   private static async callGemini(messages: ChatMessage[], files?: FileAttachment[]): Promise<string> {
     const apiKeys = this.getApiKeys('gemini');
     if (apiKeys.length === 0) {
-      throw new Error('Gemini API key not found. Please add your API key in settings.');
+      console.error('Gemini API key not found');
+      throw new Error('Google Gemini API key not found. Please add your Gemini API key in Settings > Add API.');
     }
 
     // Convert messages to Gemini format with vision support
@@ -227,7 +229,8 @@ export class ChatService {
   private static async callOpenRouter(messages: ChatMessage[], files?: FileAttachment[]): Promise<string> {
     const apiKeys = this.getApiKeys('openrouter');
     if (apiKeys.length === 0) {
-      throw new Error('OpenRouter API key not found. Please add your API key in settings.');
+      console.error('OpenRouter API key not found');
+      throw new Error('OpenRouter API key not found. Please add your OpenRouter API key in Settings > Add API.');
     }
 
     // Convert messages to OpenAI format with vision support (OpenRouter is OpenAI-compatible)
@@ -326,7 +329,8 @@ export class ChatService {
   private static async callGroq(messages: ChatMessage[], files?: FileAttachment[]): Promise<string> {
     const apiKeys = this.getApiKeys('groq');
     if (apiKeys.length === 0) {
-      throw new Error('Groq API key not found. Please add your API key in settings.');
+      console.error('Groq API key not found');
+      throw new Error('Groq API key not found. Please add your Groq API key in Settings > Add API.');
     }
 
     // Convert messages to Groq format (similar to OpenAI)
@@ -505,7 +509,18 @@ export class ChatService {
         throw error; // Re-throw if no fallback available
       } catch (fallbackError) {
         console.error('All APIs failed:', error, fallbackError);
-        throw new Error(`AI service failed. Please check your API keys in settings.`);
+
+        const availableProviders = [];
+        if (this.getApiKeys('openrouter').length > 0) availableProviders.push('OpenRouter');
+        if (this.getApiKeys('groq').length > 0) availableProviders.push('Groq');
+        if (this.getApiKeys('openai').length > 0) availableProviders.push('OpenAI');
+        if (this.getApiKeys('gemini').length > 0) availableProviders.push('Gemini');
+
+        const errorMsg = availableProviders.length > 0
+          ? `All API providers failed (attempted: ${availableProviders.join(', ')}). Please verify your API keys are valid and have quota remaining.`
+          : `No API keys configured. Please add at least one API key in Settings > Add API.`;
+
+        throw new Error(errorMsg);
       }
     }
   }
