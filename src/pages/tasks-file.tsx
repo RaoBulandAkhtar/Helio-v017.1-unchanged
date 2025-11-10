@@ -60,18 +60,7 @@ const Tasks = () => {
   });
   const [filterValues, setFilterValues] = useState(() => {
     const saved = localStorage.getItem('kario-filter-values');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (typeof parsed.date === 'string') {
-        return {
-          date: { startDate: parsed.date, endDate: parsed.date },
-          priorities: parsed.priorities || [],
-          labels: parsed.labels || []
-        };
-      }
-      return parsed;
-    }
-    return { date: { startDate: '', endDate: '' }, priorities: [], labels: [] };
+    return saved ? JSON.parse(saved) : { date: '', priorities: [], labels: [] };
   });
 
   // Calculate task statistics
@@ -301,25 +290,8 @@ const Tasks = () => {
   const applyFiltersAndSort = (tasksToFilter: Task[]): Task[] => {
     let filtered = [...tasksToFilter];
 
-    if (filterSettings.date && (filterValues.date.startDate || filterValues.date.endDate)) {
-      filtered = filtered.filter(task => {
-        const taskDate = task.dueDate || task.creationDate;
-        if (!taskDate) return false;
-
-        const taskDateObj = new Date(taskDate);
-        const startDateObj = filterValues.date.startDate ? new Date(filterValues.date.startDate) : null;
-        const endDateObj = filterValues.date.endDate ? new Date(filterValues.date.endDate) : null;
-
-        if (startDateObj && endDateObj) {
-          return taskDateObj >= startDateObj && taskDateObj <= endDateObj;
-        } else if (startDateObj) {
-          return taskDateObj >= startDateObj;
-        } else if (endDateObj) {
-          return taskDateObj <= endDateObj;
-        }
-
-        return true;
-      });
+    if (filterSettings.date && filterValues.date) {
+      filtered = filtered.filter(task => task.dueDate === filterValues.date);
     }
 
     if (filterSettings.priority && filterValues.priorities && filterValues.priorities.length > 0) {
