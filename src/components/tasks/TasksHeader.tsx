@@ -21,8 +21,8 @@ interface TasksHeaderProps {
   setFilterSettings?: (settings: { date: boolean; priority: boolean; label: boolean }) => void;
   sortSettings?: { completionStatus: boolean; creationDate: boolean; pages: boolean; chats: boolean };
   setSortSettings?: (settings: { completionStatus: boolean; creationDate: boolean; pages: boolean; chats: boolean }) => void;
-  filterValues?: { date: string; priorities: string[]; labels: string[] };
-  setFilterValues?: (values: { date: string; priorities: string[]; labels: string[] }) => void;
+  filterValues?: { date: { startDate: string; endDate: string }; priorities: string[]; labels: string[] };
+  setFilterValues?: (values: { date: { startDate: string; endDate: string }; priorities: string[]; labels: string[] }) => void;
 }
 
 const TasksHeader = ({
@@ -37,7 +37,7 @@ const TasksHeader = ({
   setFilterSettings,
   sortSettings = { completionStatus: false, creationDate: true, pages: false, chats: false },
   setSortSettings,
-  filterValues = { date: '', priorities: [], labels: [] },
+  filterValues = { date: { startDate: '', endDate: '' }, priorities: [], labels: [] },
   setFilterValues
 }: TasksHeaderProps) => {
   const [displayPopoverOpen, setDisplayPopoverOpen] = useState(false);
@@ -163,14 +163,14 @@ const TasksHeader = ({
                         {/* Date Filter */}
                         <InlineDateFilter
                           isActive={filterSettings.date}
-                          selectedDate={filterValues.date}
+                          selectedDates={filterValues.date}
                           onToggle={(checked) => {
                             const newSettings = { ...filterSettings, date: checked };
                             setFilterSettings?.(newSettings);
                             localStorage.setItem('kario-filter-settings', JSON.stringify(newSettings));
                           }}
-                          onSelect={(date) => {
-                            const newValues = { ...filterValues, date };
+                          onSelect={(dates) => {
+                            const newValues = { ...filterValues, date: dates };
                             setFilterValues?.(newValues);
                             localStorage.setItem('kario-filter-values', JSON.stringify(newValues));
                           }}
