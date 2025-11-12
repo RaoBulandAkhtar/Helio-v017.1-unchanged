@@ -37,7 +37,7 @@ function Calendar({
         day: cn(
           "h-9 w-9 p-0 font-normal text-gray-300 rounded-md transition-all aria-selected:opacity-100 [&:not(.rdp-day_selected)]:hover:bg-[#2e2e2e] [&:not(.rdp-day_selected)]:hover:text-white"
         ),
-        day_range_end: "day-range-end",
+        day_range_end: "bg-white text-black font-medium rounded-md",
         day_selected:
           "bg-white text-black hover:bg-gray-100 hover:text-black focus:bg-white focus:text-black font-medium rounded-md",
         day_today: "bg-[#2e2e2e] text-white font-medium rounded-md aria-selected:!bg-white aria-selected:!text-black",
@@ -45,7 +45,7 @@ function Calendar({
           "day-outside text-gray-600 opacity-50 aria-selected:bg-[#2e2e2e]/50 aria-selected:text-gray-500 aria-selected:opacity-30",
         day_disabled: "text-gray-600 opacity-30",
         day_range_middle:
-          "aria-selected:bg-[#2e2e2e] aria-selected:text-white",
+          "aria-selected:bg-[#3a3a3a] aria-selected:text-white",
         day_hidden: "invisible",
         ...classNames,
       }}

@@ -1,27 +1,37 @@
 import React, { useState } from 'react';
-import { Calendar, X, Info } from 'lucide-react';
+import { Calendar, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { IconToggle } from '@/components/ui/icon-toggle';
-import { Input } from '@/components/ui/input';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { format, parse, isWithinInterval, addMonths, subMonths, isValid } from 'date-fns';
+import { format, addMonths, subMonths, isWithinInterval } from 'date-fns';
+import { DateRange } from 'react-day-picker';
 
 interface InlineDateFilterProps {
   isActive: boolean;
-  selectedDate: string;
+  selectedDateRange: string;
   onToggle: (checked: boolean) => void;
-  onSelect: (date: string) => void;
+  onSelect: (dateRange: string) => void;
 }
 
 const InlineDateFilter: React.FC<InlineDateFilterProps> = ({
   isActive,
-  selectedDate,
+  selectedDateRange,
   onToggle,
   onSelect
 }) => {
-  const [searchInput, setSearchInput] = useState('');
-  const [searchError, setSearchError] = useState('');
+  const [range, setRange] = useState<DateRange | undefined>(() => {
+    if (!selectedDateRange) return undefined;
+    try {
+      const parsed = JSON.parse(selectedDateRange);
+      return {
+        from: parsed.from ? new Date(parsed.from) : undefined,
+        to: parsed.to ? new Date(parsed.to) : undefined
+      };
+    } catch {
+      return undefined;
+    }
+  });
+  const [clickCount, setClickCount] = useState(0);
 
   const handleToggle = (checked: boolean) => {
     onToggle(checked);
@@ -36,49 +46,43 @@ const InlineDateFilter: React.FC<InlineDateFilterProps> = ({
   };
 
   const handleDateSelect = (date: Date | undefined) => {
-    if (date && isDateInRange(date)) {
-      const dateString = format(date, 'yyyy-MM-dd');
-      onSelect(dateString);
-      setSearchInput('');
-      setSearchError('');
-    }
-  };
+    if (!date || !isDateInRange(date)) return;
 
-  const handleSearchInput = (value: string) => {
-    setSearchInput(value);
-    setSearchError('');
+    if (clickCount === 0) {
+      setRange({ from: date, to: undefined });
+      setClickCount(1);
+    } else if (clickCount === 1) {
+      if (range?.from) {
+        let startDate = range.from;
+        let endDate = date;
 
-    if (!value.trim()) {
-      return;
-    }
+        if (endDate < startDate) {
+          [startDate, endDate] = [endDate, startDate];
+        }
 
-    const formats = ['MM/dd/yyyy', 'yyyy-MM-dd', 'MM-dd-yyyy', 'dd/MM/yyyy'];
-    let parsedDate: Date | null = null;
+        const rangeData = {
+          from: format(startDate, 'yyyy-MM-dd'),
+          to: format(endDate, 'yyyy-MM-dd')
+        };
 
-    for (const fmt of formats) {
-      const parsed = parse(value, fmt, new Date());
-      if (isValid(parsed)) {
-        parsedDate = parsed;
-        break;
-      }
-    }
-
-    if (parsedDate) {
-      if (isDateInRange(parsedDate)) {
-        const dateString = format(parsedDate, 'yyyy-MM-dd');
-        onSelect(dateString);
-        setSearchInput('');
-        setSearchError('');
-      } else {
-        setSearchError('Date must be within 3 months');
+        setRange({ from: startDate, to: endDate });
+        onSelect(JSON.stringify(rangeData));
+        setClickCount(0);
       }
     }
   };
 
   const clearDate = () => {
     onSelect('');
-    setSearchInput('');
-    setSearchError('');
+    setRange(undefined);
+    setClickCount(0);
+  };
+
+  const getRangeDisplay = (): string => {
+    if (!range?.from && !range?.to) return 'Select range';
+    if (range?.from && !range?.to) return format(range.from, 'MMM dd') + ' → ?';
+    if (range?.from && range?.to) return format(range.from, 'MMM dd') + ' → ' + format(range.to, 'MMM dd');
+    return 'Select range';
   };
 
   return (
@@ -93,29 +97,22 @@ const InlineDateFilter: React.FC<InlineDateFilterProps> = ({
       </div>
 
       {isActive && (
-        <div className="bg-[#252525] border border-[#414141] rounded-[12px] p-3 space-y-2">
-          <input
-            type="text"
-            value={searchInput}
-            onChange={(e) => handleSearchInput(e.target.value)}
-            placeholder="Search date..."
-            className="w-full bg-transparent text-white text-sm px-0 py-2 outline-none placeholder-gray-500 border-none"
-          />
-          {searchError && (
-            <p className="text-xs text-red-400">{searchError}</p>
-          )}
+        <div className="bg-[#252525] border border-[#414141] rounded-[12px] p-3 space-y-3">
+          <div className="text-xs text-gray-400 text-center">
+            {clickCount === 0 ? 'Click two dates to select range' : 'Click second date to complete range'}
+          </div>
 
           <div className="flex justify-center scale-90 origin-top -my-2">
             <CalendarComponent
-              mode="single"
-              selected={selectedDate ? new Date(selectedDate) : undefined}
+              mode="range"
+              selected={range}
               onSelect={handleDateSelect}
               disabled={(date) => !isDateInRange(date)}
               className="rounded-[8px]"
             />
           </div>
 
-          {selectedDate && (
+          {(range?.from || range?.to) && (
             <Button
               onClick={clearDate}
               variant="ghost"
